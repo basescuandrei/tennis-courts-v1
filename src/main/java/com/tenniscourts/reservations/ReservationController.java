@@ -3,13 +3,18 @@ package com.tenniscourts.reservations;
 import com.tenniscourts.config.BaseRestController;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
+@Controller
 @AllArgsConstructor
+@RequestMapping("/reservation")
 public class ReservationController extends BaseRestController {
 
     private final ReservationService reservationService;
 
-    public ResponseEntity<Void> bookReservation(CreateReservationRequestDTO createReservationRequestDTO) {
+    @PostMapping
+    public ResponseEntity<Void> bookReservation(@RequestBody CreateReservationRequestDTO createReservationRequestDTO) {
         return ResponseEntity.created(locationByEntity(reservationService.bookReservation(createReservationRequestDTO).getId())).build();
     }
 
@@ -17,11 +22,14 @@ public class ReservationController extends BaseRestController {
         return ResponseEntity.ok(reservationService.findReservation(reservationId));
     }
 
-    public ResponseEntity<ReservationDTO> cancelReservation(Long reservationId) {
+    @DeleteMapping
+    public ResponseEntity<ReservationDTO> cancelReservation(@RequestParam("reservationId") Long reservationId) {
         return ResponseEntity.ok(reservationService.cancelReservation(reservationId));
     }
 
-    public ResponseEntity<ReservationDTO> rescheduleReservation(Long reservationId, Long scheduleId) {
+    @PutMapping
+    public ResponseEntity<ReservationDTO> rescheduleReservation(@RequestParam("reservationId") Long reservationId,
+                                                                @RequestParam("scheduleId") Long scheduleId) {
         return ResponseEntity.ok(reservationService.rescheduleReservation(reservationId, scheduleId));
     }
 }

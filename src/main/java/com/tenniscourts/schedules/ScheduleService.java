@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -20,8 +21,14 @@ public class ScheduleService {
     }
 
     public List<ScheduleDTO> findSchedulesByDates(LocalDateTime startDate, LocalDateTime endDate) {
-        //TODO: implement
-        return null;
+        if (startDate.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Invalid date, start date must be a future date.");
+        }
+        if (endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException("End date must be greater than start date.");
+        }
+        return scheduleRepository.findAllFreeSchedules(startDate, endDate)
+                .stream().map(scheduleMapper::map).collect(Collectors.toList());
     }
 
     public ScheduleDTO findSchedule(Long scheduleId) {
